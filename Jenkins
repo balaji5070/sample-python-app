@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    stages {
+        stage ("clone") {
+            steps {
+                git branch: 'main', url: 'https://github.com/balaji5070/sample-java-spring-app.git'
+                sh "ls"
+                
+            }
+            
+        }
+        stage ("maven build") {
+            steps {
+                sh "mvn clean install"
+                
+                
+            }
+        }
+        stage ("docker build") {
+            steps {
+                sh "docker build -t rbalaji2001/java ."
+                
+                
+            }
+        }
+        stage ("docker hub") {
+            steps {
+                sh "docker login -u rbalaji2001 -p Balaji3152001"
+                sh "docker push rbalaji2001/java"
+                
+            }
+        }
+        stage ("docker container") {
+            steps {
+                sh "docker rm -f java-pipeline"
+                sh "docker run -d --name=java-pipeline -p 8084:8080 rbalaji2001/java"
+                
+                
+            }
+        }
+        stage ("clean") {
+            steps {
+                cleanWs ()
+            }
+        }
+    }
+}
